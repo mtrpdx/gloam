@@ -1,0 +1,84 @@
+#!/usr/bin/env sh
+# -*- mode: shell-script; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+#
+# Author: Martin Rodriguez <mtrpdx@gmail.com>
+#
+
+# SCHEDULING CONFIGURATION
+# LAT=45.52
+# LONG=-122.70
+MORNING=0700    # This is the hour at which to switch to light mode
+NIGHT=2000      # This is the hour at which to switch to dark mode
+# ALACRITTY CONFIGURATION
+A_CFG="$HOME/.config/alacritty/alacritty.toml"
+# A_CFG="$HOME/.local/bin/gloam/alacritty.toml"
+A_LIGHT_THEME="$HOME/.config/alacritty/themes/themes/rose_pine_dawn.toml"
+A_DARK_THEME="$HOME/.config/alacritty/themes/themes/gruvbox_dark.toml"
+
+# Debug options
+FORCE_DARK=0
+
+get_current_time() {
+    echo $(date +"%H%M")
+}
+
+get_gnome_current_mode() {
+    echo $(gsettings get org.gnome.desktop.interface color-scheme)
+}
+
+set_gnome_light_mode() {
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
+}
+
+set_gnome_dark_mode() {
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+}
+
+set_alacritty_light_mode() {
+    # Replaces active theme with light mode theme
+    sed -i "s|import = \[\".*\"\]|import = [\"$A_LIGHT_THEME\"]|" "$A_CFG"
+}
+
+set_alacritty_dark_mode() {
+    # Replaces active theme with dark mode theme
+    sed -i "s|import = \[\".*\"\]|import = [\"$A_DARK_THEME\"]|" "$A_CFG"
+}
+
+clean_up() {
+    unset MORNING NIGHT A_CFG A_LIGHT_THEME A_DARK_THEME FORCE_DARK
+    unset ct cm change_flag
+
+}
+
+if [ "$FORCE_DARK" -eq "1" ]; then
+    ct=2200
+else
+    ct=$(get_current_time)
+fi
+
+cm=$(get_gnome_current_mode)
+change_flag=0
+if [ $ct -gt $MORNING ] && [ $ct -lt $NIGHT ]; then
+    if [ "$cm" = "'prefer-dark'" ]; then
+        echo "gloam : running at $ct. Current mode is $cm. Changing to light mode..."
+        set_gnome_light_mode
+        set_alacritty_light_mode
+        change_flag=1
+        echo "Done."
+    fi
+fi
+if [ $ct -lt $MORNING ] || [ $ct -gt $NIGHT ]; then
+    if [ "$cm" = "'prefer-light'" ]; then
+        echo "gloam : running at $ct. Current mode is $cm. Changing to dark mode..."
+        set_gnome_dark_mode
+        set_alacritty_dark_mode
+        change_flag=1
+        echo "Done."
+    fi
+fi
+if [ "$change_flag" -eq "0" ]; then
+    echo "gloam : running at $ct. Current mode is $cm. Mode unchanged."
+fi
+
+clean_up
+return 0
