@@ -3,12 +3,24 @@
 #
 # Author: Martin Rodriguez <mtrpdx@gmail.com>
 #
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see <https://www.gnu.org/licenses/>.
 
 # SCHEDULING CONFIGURATION
 # LAT=45.52
 # LONG=-122.70
 MORNING=0700    # This is the hour at which to switch to light mode
-NIGHT=2000      # This is the hour at which to switch to dark mode
+NIGHT=1730      # This is the hour at which to switch to dark mode
 # ALACRITTY CONFIGURATION
 A_CFG="$HOME/.config/alacritty/alacritty.toml"
 # A_CFG="$HOME/.local/bin/gloam/alacritty.toml"
